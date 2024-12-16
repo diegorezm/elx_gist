@@ -1,0 +1,38 @@
+<header class="flex items-center justify-between sm:px-6 p-4 lg:px-8">
+  <a href={~p"/"} class="btn btn-ghost">
+    <img src="/images/gist-logo.svg" class="h-8 w-auto" />
+    <h2 class="text-2xl font-bold">
+      Gist
+    </h2>
+  </a>
+
+  <ul class="relative z-10 flex items-center gap-4 justify-end text-foreground text-lg">
+    <%= if @current_user do %>
+      <li>
+        <.link href={~p"/users/settings"} class="btn btn-default">
+          Settings
+        </.link>
+      </li>
+      <li>
+        <.link href={~p"/users/log_out"} method="delete" class="btn btn-ghost">
+          Log out
+        </.link>
+      </li>
+    <% else %>
+      <li>
+        <.link href={~p"/users/register"} class="btn btn-default">
+          Register
+        </.link>
+      </li>
+      <li>
+        <.link href={~p"/users/log_in"} class="btn btn-primary">
+          Log in
+        </.link>
+      </li>
+    <% end %>
+  </ul>
+</header>
+
+<main class="px-4 md:px-10 mt-8">
+  {@inner_content}
+</main>

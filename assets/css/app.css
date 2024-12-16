@@ -1,0 +1,42 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* This file is for your main application CSS */
+
+@layer base {
+     .btn {
+          @apply inline-flex items-center p-2 px-4 rounded-sm transition-colors phx-submit-loading:opacity-75 disabled:opacity-75;
+     }
+
+     .btn-default {
+          @apply bg-foreground text-background hover:bg-foreground/80;
+     }
+
+     .btn-primary {
+          @apply border-2 border-brand-red text-brand-red hover:bg-brand-red hover:text-foreground
+     }
+
+     .btn-ghost {
+          @apply hover:bg-gray-200
+     }
+}
+
+@font-face {
+     font-family: "Geist";
+     src: url("/fonts/Geist-Regular.ttf");
+     font-weight: 400;
+     font-style: normal;
+}
+
+@font-face {
+     font-family: "Geist";
+     src: url("/fonts/Geist-Bold.ttf");
+     font-weight: 700;
+     font-style: normal;
+}
+
+html,
+body {
+     font-family: Geist, Arial, Helvetica, sans-serif;
+}
