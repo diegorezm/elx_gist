@@ -9,6 +9,8 @@ defmodule ElxGist.Accounts.User do
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
+    has_many :gists, ElxGist.Gists.Gist
+    has_many :comments, ElxGist.Comments.Comment
 
     timestamps(type: :utc_datetime)
   end

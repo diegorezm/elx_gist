@@ -5,38 +5,52 @@
 /* This file is for your main application CSS */
 
 @layer base {
-     .btn {
-          @apply inline-flex items-center p-2 px-4 rounded-sm transition-colors phx-submit-loading:opacity-75 disabled:opacity-75;
-     }
+  .btn {
+    @apply inline-flex items-center py-2 px-1 md:px-4 rounded-md transition-colors phx-submit-loading:opacity-40 disabled:opacity-40 gap-2;
+  }
 
-     .btn-default {
-          @apply bg-foreground text-background hover:bg-foreground/80;
-     }
+  .btn-primary {
+    @apply bg-primary text-foreground hover:opacity-80
+  }
 
-     .btn-primary {
-          @apply border-2 border-brand-red text-brand-red hover:bg-brand-red hover:text-foreground
-     }
+  .btn-secondary {
+    @apply bg-secondary text-foreground hover:opacity-80
+  }
 
-     .btn-ghost {
-          @apply hover:bg-gray-200
-     }
+  .btn-outline {
+    @apply bg-transparent border border-button-b hover:bg-foreground/10
+  }
+
+  .btn-ghost {
+    @apply hover:bg-foreground/10
+  }
+
+  .input {
+    @apply rounded-md bg-transparent border border-input-b text-foreground focus:ring-0 focus:outline-none focus:border-primary w-full
+  }
+
 }
 
 @font-face {
-     font-family: "Geist";
-     src: url("/fonts/Geist-Regular.ttf");
-     font-weight: 400;
-     font-style: normal;
+  font-family: "Geist";
+  src: url("/fonts/Geist-Regular.ttf");
+  font-weight: 400;
+  font-style: normal;
 }
 
 @font-face {
-     font-family: "Geist";
-     src: url("/fonts/Geist-Bold.ttf");
-     font-weight: 700;
-     font-style: normal;
+  font-family: "Geist";
+  src: url("/fonts/Geist-Bold.ttf");
+  font-weight: 700;
+  font-style: normal;
+}
+
+.round-image-padding {
+  border-radius: 50%;
+  padding: 4px;
 }
 
 html,
 body {
-     font-family: Geist, Arial, Helvetica, sans-serif;
+  font-family: "Geist, Arial, Helvetica, sans-serif";
 }

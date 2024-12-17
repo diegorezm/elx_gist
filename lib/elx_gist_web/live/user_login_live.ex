@@ -4,7 +4,7 @@ defmodule ElxGistWeb.UserLoginLive do
   def render(assigns) do
     ~H"""
     <div class="mx-auto w-full md:max-w-md">
-      <.header class="text-center">
+      <.header class="text-center mb-10">
         Log in to account
         <:subtitle>
           Don't have an account?
@@ -26,7 +26,7 @@ defmodule ElxGistWeb.UserLoginLive do
           </.link>
         </:actions>
         <:actions>
-          <.button phx-disable-with="Logging in..." class="w-full">
+          <.button phx-disable-with="Logging in...">
             Log in <span aria-hidden="true">→</span>
           </.button>
         </:actions>

@@ -202,7 +202,7 @@ defmodule ElxGistWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="w-full h-full bg-white p-4 mt-10 space-y-4 rounded-sm shadow">
+      <div class="w-full h-full bg-card text-card-foreground p-4 space-y-4 rounded-sm shadow">
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -221,12 +221,19 @@ defmodule ElxGistWeb.CoreComponents do
       <.button phx-click="go" class="ml-2">Send!</.button>
   """
   attr :type, :string, default: nil
-  attr :class, :string, default: nil
+  attr :class, :string, default: "btn btn-primary"
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
 
   def button(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :class,
+        if(assigns[:class] == "", do: "btn btn-primary", else: assigns[:class])
+      )
+
     ~H"""
     <%!-- <button
       type={@type}
@@ -239,14 +246,7 @@ defmodule ElxGistWeb.CoreComponents do
     >
       {render_slot(@inner_block)}
     </button> --%>
-    <button
-      type={@type}
-      class={[
-        "btn btn-default",
-        @class
-      ]}
-      {@rest}
-    >
+    <button type={@type} class={@class} {@rest}>
       {render_slot(@inner_block)}
     </button>
     """
@@ -296,6 +296,7 @@ defmodule ElxGistWeb.CoreComponents do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
+  attr :class, :string, default: "", doc: "Class"
 
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
@@ -328,7 +329,7 @@ defmodule ElxGistWeb.CoreComponents do
           name={@name}
           value="true"
           checked={@checked}
-          class="rounded-sm border-zinc-300 text-zinc-900 focus:ring-0"
+          class="border-foreground text-muted rounded-sm focus:ring-0"
           {@rest}
         />
         {@label}
@@ -365,8 +366,8 @@ defmodule ElxGistWeb.CoreComponents do
         id={@id}
         name={@name}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6 min-h-[6rem]",
-          @errors == [] && "border-zinc-300 focus:border-zinc-400",
+          "border-input",
+          @class,
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
         {@rest}
@@ -387,9 +388,10 @@ defmodule ElxGistWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "input",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
+          @errors != [] && "border-rose-400 focus:border-brand-red",
+          @class
         ]}
         {@rest}
       />
@@ -406,7 +408,7 @@ defmodule ElxGistWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm font-bold leading-6 text-foreground">
       {render_slot(@inner_block)}
     </label>
     """
@@ -442,7 +444,7 @@ defmodule ElxGistWeb.CoreComponents do
         <h1 class="text-2xl font-semibold leading-8 text-primary">
           {render_slot(@inner_block)}
         </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-secondary">
+        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-muted-foreground">
           {render_slot(@subtitle)}
         </p>
       </div>

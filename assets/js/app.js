@@ -23,9 +23,54 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
+
+let Hooks = {
+  UpdateLineNumbers: {
+    mounted() {
+      const lineNumberText = document.querySelector("#gist-line-numbers")
+
+      this.el.addEventListener("input", () => {
+        this.updateLineNumbers()
+      })
+
+      this.el.addEventListener("scroll", () => {
+        lineNumberText.scrollTop = this.el.scrollTop
+      })
+
+      this.el.addEventListener("keydown", (e) => {
+        if (e.key == "Tab") {
+          e.preventDefault()
+          let start = this.el.selectionStart
+          let end = this.el.selectionEnd
+          this.el.value = this.el.value.substring(0, start) + "\t" + this.el.value.substring(end)
+          this.el.selectionStart = this.el.selectionEnd = start + 1
+        }
+      })
+
+      this.handleEvent("clear-textareas", () => {
+        console.log("this is the event")
+        this.el.value = ""
+        lineNumberText.value = "1\n"
+      })
+
+      this.updateLineNumbers()
+    },
+    updateLineNumbers() {
+      const lineNumberText = document.querySelector("#gist-line-numbers")
+      if (!lineNumberText) return;
+
+      const lines = this.el.value.split("\n")
+      const numbers = lines.map((_, i) => i + 1).join("\n") + "\n"
+      lineNumberText.value = numbers
+    }
+  }
+}
+
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: {_csrf_token: csrfToken},
+  hooks: Hooks
 })
 
 // Show progress bar on live navigation and form submits
@@ -41,4 +86,3 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
-
