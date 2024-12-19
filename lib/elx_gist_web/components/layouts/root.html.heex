@@ -3,15 +3,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg" href="/images/em-logo.svg" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title suffix=" · ElxGist">
       {assigns[:page_title] || "Home"}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <link rel="stylesheet" href="/assets/tokyo-night-dark.css" />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body class="bg-background w-full min-h-screen font-brand antialiased">
+  <body class="text-foreground bg-background w-full min-h-screen font-brand antialiased">
     {@inner_content}
   </body>
 </html>

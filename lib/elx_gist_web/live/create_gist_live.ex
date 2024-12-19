@@ -1,16 +1,10 @@
 defmodule ElxGistWeb.CreateGistLive do
   use ElxGistWeb, :live_view
-
+  alias ElxGistWeb.GistFormComponent
   alias ElxGist.Gists.Gist
   alias ElxGist.Gists
 
   def mount(_params, _session, socket) do
-    socket =
-      assign(
-        socket,
-        form: to_form(Gists.change_gist(%Gist{}))
-      )
-
     {:ok, socket}
   end
 
@@ -23,13 +17,15 @@ defmodule ElxGistWeb.CreateGistLive do
     {:noreply, assign(socket, :form, to_form(changeset))}
   end
 
-  def handle_event("create", %{"gist" => params}, socket) do
+  def handle_event("submit", %{"gist" => params}, socket) do
     case Gists.create_gist(socket.assigns.current_user, params) do
-      {:ok, _gist} ->
+      {:ok, gist} ->
         socket = push_event(socket, "clear-textareas", %{})
         # reset form
         changeset = Gists.change_gist(%Gist{})
-        {:noreply, assign(socket, :form, to_form(changeset))}
+        socket = assign(socket, :form, to_form(changeset))
+        # redirect
+        {:noreply, push_navigate(socket, to: ~p"/gist?#{[id: gist.id]}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :form, to_form(changeset))}

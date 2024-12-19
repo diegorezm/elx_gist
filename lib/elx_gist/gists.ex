@@ -4,9 +4,11 @@ defmodule ElxGist.Gists do
   """
 
   import Ecto.Query, warn: false
+
   alias ElxGist.Repo
 
   alias ElxGist.Gists.Gist
+  alias ElxGist.Accounts.User
 
   @doc """
   Returns the list of gists.
@@ -19,6 +21,18 @@ defmodule ElxGist.Gists do
   """
   def list_gists do
     Repo.all(Gist)
+  end
+
+  @doc """
+  Returns a paginated list of gists
+
+  ## Examples
+
+      iex> list_gists(%{"page" => 1, "page_size" => 10})
+      %Scrivener.Page{entries: [%Gist{}, ...], page_number: 1, page_size: 10, total_entries: 100}
+  """
+  def list_gists(params) do
+    Repo.paginate(Gist, params)
   end
 
   @doc """
@@ -68,10 +82,18 @@ defmodule ElxGist.Gists do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_gist(%Gist{} = gist, attrs) do
-    gist
-    |> Gist.changeset(attrs)
-    |> Repo.update()
+  def update_gist(%User{} = user, attrs) do
+    gist = Repo.get!(Gist, attrs["id"])
+
+    if user.id == gist.user_id do
+      gist
+      |> Gist.changeset(attrs)
+      |> Repo.update()
+
+      {:ok, gist}
+    else
+      {:error, :unauthorized}
+    end
   end
 
   @doc """
@@ -86,8 +108,15 @@ defmodule ElxGist.Gists do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_gist(%Gist{} = gist) do
-    Repo.delete(gist)
+  def delete_gist(%User{} = user, gist_id) do
+    gist = Repo.get!(Gist, gist_id)
+
+    if user.id == gist.user_id do
+      Repo.delete(gist)
+      {:ok, gist}
+    else
+      {:error, :unauthorized}
+    end
   end
 
   @doc """

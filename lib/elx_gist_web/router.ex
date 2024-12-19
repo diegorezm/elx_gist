@@ -69,6 +69,8 @@ defmodule ElxGistWeb.Router do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
       live "/gist/create", CreateGistLive
+      live "/gist/", GistLive
+      live "/gists/all", AllGistsLive
     end
   end
 

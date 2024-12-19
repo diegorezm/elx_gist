@@ -19,5 +19,6 @@ defmodule ElxGist.Gists.Gist do
     gist
     |> cast(attrs, [:name, :description, :markup_text, :user_id])
     |> validate_required([:name, :user_id])
+    |> validate_length(:markup_text, min: 0, max: 10000)
   end
 end

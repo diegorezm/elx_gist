@@ -4,6 +4,8 @@
 
 /* This file is for your main application CSS */
 
+
+
 @layer base {
   .btn {
     @apply inline-flex items-center py-2 px-1 md:px-4 rounded-md transition-colors phx-submit-loading:opacity-40 disabled:opacity-40 gap-2;
@@ -18,7 +20,7 @@
   }
 
   .btn-outline {
-    @apply bg-transparent border border-button-b hover:bg-foreground/10
+    @apply bg-transparent border border-button-b hover:bg-foreground/20
   }
 
   .btn-ghost {

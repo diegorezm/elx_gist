@@ -15,6 +15,7 @@
 //     import "some-package"
 //
 
+import hjs from 'highlight.js'
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
@@ -24,14 +25,105 @@ import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
+// this is only for file extensions
+// where fileExt !== language name.
+// there is no need to add, for exemple, java here since the file extension
+// and the language name are the same. 
+
+function updateLineNumbers(value) {
+  const lineNumberText = document.querySelector("#gist-line-numbers")
+  if (!lineNumberText) return;
+
+  const lines = value.split("\n")
+  const numbers = lines.map((_, i) => i + 1).join("\n") + "\n"
+  lineNumberText.value = numbers
+}
 
 let Hooks = {
+  ToggleEdit: {
+    mounted() {
+      this.el.addEventListener("click", () => {
+        const editForm = document.getElementById("edit-section")
+        const hjsSection = document.getElementById("hjs-section")
+        if (!editForm || !hjsSection) return
+        const isHidden = editForm.classList.contains("hidden")
+        if (isHidden) {
+          editForm.classList.remove("hidden")
+          editForm.classList.add("block")
+          hjsSection.classList.add("hidden")
+        } else {
+          editForm.classList.remove("block")
+          editForm.classList.add("hidden")
+          hjsSection.classList.remove("hidden")
+        }
+      })
+    }
+  },
+  CopyToClipBoard: {
+    mounted() {
+      this.el.addEventListener("click", (e) => {
+        const textToCopy = this.el.getAttribute("data-clipboard-gist")
+        if (textToCopy) {
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            console.log("Gist copied to clipboard!")
+          }).catch(e => {
+            console.error(e)
+          })
+        }
+      })
+    }
+  },
+  Highlight: {
+    mounted() {
+      let name = this.el.getAttribute("data-name")
+      if (!name) return
+
+      let codeblock = this.el.querySelector("pre code")
+      if (!codeblock) return
+
+      const codewrapper = this.el.querySelector("code")
+      const fileExt = name.split(".").pop()
+      const codeClassName = this.getSyntaxType(fileExt)
+      codewrapper.classList.add(codeClassName)
+      hjs.highlightElement(codeblock)
+
+      updateLineNumbers(codeblock.textContent)
+    },
+    getSyntaxType(fileExt) {
+      let codeClassName;
+      const extToLanguage = {
+        "heex": "html",
+        "py": "python",
+        "js": "javascript",
+        "ts": "typescript",
+        "ex": "elixir",
+        "go": "golang",
+        "rs": "rust",
+      }
+
+      if (fileExt in extToLanguage) {
+        codeClassName = `language-${extToLanguage[fileExt]}`
+      } else {
+        codeClassName = `language-${fileExt}`
+      }
+      return codeClassName
+    },
+    trimCodeBlock(codeblock) {
+      const lines = codeblock.textContent.split("\n")
+      if (lines.length > 2) {
+        lines.shift()
+        lines.pop()
+      }
+      codeblock.textContent = lines.join("\n")
+      return codeblock
+    }
+  },
   UpdateLineNumbers: {
     mounted() {
       const lineNumberText = document.querySelector("#gist-line-numbers")
 
       this.el.addEventListener("input", () => {
-        this.updateLineNumbers()
+        updateLineNumbers(this.el.value)
       })
 
       this.el.addEventListener("scroll", () => {
@@ -54,16 +146,8 @@ let Hooks = {
         lineNumberText.value = "1\n"
       })
 
-      this.updateLineNumbers()
+      updateLineNumbers(this.el.value)
     },
-    updateLineNumbers() {
-      const lineNumberText = document.querySelector("#gist-line-numbers")
-      if (!lineNumberText) return;
-
-      const lines = this.el.value.split("\n")
-      const numbers = lines.map((_, i) => i + 1).join("\n") + "\n"
-      lineNumberText.value = numbers
-    }
   }
 }
 
