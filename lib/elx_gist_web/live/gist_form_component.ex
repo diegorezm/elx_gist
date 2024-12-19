@@ -34,7 +34,7 @@ defmodule ElxGistWeb.GistFormComponent do
             id="gist-textarea-wrapper"
           >
             <textarea
-              id="gist-line-numbers"
+              id="line-numbers"
               class="rounded-bl-md border-input-b text-sm h-[300px] w-[54px] text-right overflow-hidden resize-none pr-2 leading-6 bg-background focus:outline-none focus:border-input-b focus:ring-0"
               readonly
               autocomplete="off"

@@ -10,6 +10,7 @@ defmodule ElxGist.Gists.Gist do
     field :markup_text, :string
     belongs_to :user, ElxGist.Accounts.User
     has_many :comments, ElxGist.Comments.Comment
+    has_many :saved_gists, ElxGist.Gists.SavedGist
 
     timestamps(type: :utc_datetime)
   end

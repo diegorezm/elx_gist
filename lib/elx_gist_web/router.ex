@@ -71,6 +71,8 @@ defmodule ElxGistWeb.Router do
       live "/gist/create", CreateGistLive
       live "/gist/", GistLive
       live "/gists/all", AllGistsLive
+      live "/users/gists", UserGistsLive
+      live "/users/saved_gists", UserSavedGistsLive
     end
   end
 

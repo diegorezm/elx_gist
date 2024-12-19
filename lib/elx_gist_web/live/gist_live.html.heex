@@ -4,7 +4,7 @@
       <img src="/images/user-image.svg" class="h-8 w-auto" />
       <div>
         <p class="font-bold text-primary">
-          {@current_user.email} <span class="text-foreground">/</span> {@gist.name}
+          {@gist.user.email} <span class="text-foreground">/</span> {@gist.name}
         </p>
         <p class="text-sm">
           {@gist.relative}
@@ -16,13 +16,19 @@
     </div>
     <div class="flex items-center">
       <button
+        phx-click="bookmark"
+        phx-value-gist={@gist.id}
         aria-label="Save this gist"
         class="inline-flex items-center justify-center py-2 px-4 rounded-l-md transition-colors bg-primary h-10 gap-1 hover:opacity-80"
       >
-        <img src="/images/BookmarkOutline.svg" alt="save button svg" class="h-6" /> Save
+        <%= if has_user_saved_gist(@current_user, @gist.id)  do %>
+          <img src="/images/BookmarkFilled.svg" alt="Bookmark button" class="h-6" /> Saved
+        <% else %>
+          <img src="/images/BookmarkOutline.svg" alt="save button svg" class="h-6" /> Save
+        <% end %>
       </button>
       <div class="py-2 px-4 rounded-r-md border-l-0 border border-primary h-10 flex items-center justify-center">
-        0
+        {get_saved_count(@gist.id)}
       </div>
     </div>
   </nav>
@@ -75,10 +81,11 @@
       phx-hook="Highlight"
       id="view-code-block-element"
       class="flex h-full"
+      phx-update="ignore"
       data-name={@gist.name}
     >
       <textarea
-        id="gist-line-numbers"
+        id="line-numbers"
         class="rounded-bl-md border-input-b text-sm min-h-full w-[54px] text-right overflow-hidden leading-[1.5rem] resize-none pr-2 bg-background focus:outline-none focus:border-input-b focus:ring-0 py-4"
         readonly
         autocomplete="off"

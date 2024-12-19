@@ -31,7 +31,7 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 // and the language name are the same. 
 
 function updateLineNumbers(value) {
-  const lineNumberText = document.querySelector("#gist-line-numbers")
+  const lineNumberText = document.querySelector("#line-numbers")
   if (!lineNumberText) return;
 
   const lines = value.split("\n")

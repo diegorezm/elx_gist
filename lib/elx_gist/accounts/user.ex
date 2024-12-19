@@ -11,6 +11,7 @@ defmodule ElxGist.Accounts.User do
     field :confirmed_at, :utc_datetime
     has_many :gists, ElxGist.Gists.Gist
     has_many :comments, ElxGist.Comments.Comment
+    has_many :saved_gists, ElxGist.Gists.SavedGist
 
     timestamps(type: :utc_datetime)
   end

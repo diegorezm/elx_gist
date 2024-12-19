@@ -36,12 +36,16 @@
       >
         <ul class="flex flex-col gap-1">
           <li>
-            <.link href={~p"/users/settings"} class="btn btn-ghost w-full gap-2" tabindex="-1">
+            <.link
+              href={~p"/users/gists?#{[id: @current_user.id]}"}
+              class="btn btn-ghost w-full gap-2"
+              tabindex="-1"
+            >
               <.icon name="hero-archive-box" class="h-5 w-5" /> My gists
             </.link>
           </li>
           <li>
-            <.link href={~p"/users/settings"} class="btn btn-ghost w-full gap-2" tabindex="-1">
+            <.link href={~p"/users/saved_gists"} class="btn btn-ghost w-full gap-2" tabindex="-1">
               <img src="/images/BookmarkFilled.svg" alt="Saved Gists button" class="h-5 w-5" />
               Saved gists
             </.link>

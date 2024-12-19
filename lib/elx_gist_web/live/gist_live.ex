@@ -44,4 +44,23 @@ defmodule ElxGistWeb.GistLive do
         {:noreply, socket}
     end
   end
+
+  def handle_event("bookmark", %{"gist" => gist_id}, socket) do
+    current_user = socket.assigns.current_user
+    Gists.toggle_saved_gist(current_user, gist_id)
+    socket = send_update(GistCardComponent, id: gist_id, current_user: current_user)
+    {:noreply, socket}
+  end
+
+  def get_saved_count(gist_id) do
+    Gists.count_saved_gists(gist_id)
+  end
+
+  def has_user_saved_gist(user, gist_id) do
+    Gists.has_user_saved_gist(user.id, gist_id)
+  end
+
+  def toggle_saved_gist(user, gist_id) do
+    Gists.toggle_saved_gist(user, gist_id)
+  end
 end

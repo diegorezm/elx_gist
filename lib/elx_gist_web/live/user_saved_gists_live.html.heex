@@ -1,0 +1,17 @@
+<div class="flex flex-col items-center justify-center  gap-12 w-full">
+  <h1 class="text-2xl text-primary font-bold">Saved gists</h1>
+  <%= if length(@gists) > 0 do %>
+    <ul class="flex flex-col justify-center items-center w-full gap-12">
+      <%= for gist <- @gists do %>
+        <.live_component
+          module={ElxGistWeb.GistCardComponent}
+          gist={gist}
+          id={gist.id}
+          current_user={@current_user}
+        />
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-lg text-center">No gists saved yet</p>
+  <% end %>
+</div>

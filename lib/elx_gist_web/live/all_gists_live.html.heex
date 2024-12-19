@@ -1,43 +1,14 @@
 <div class="flex flex-col items-center justify-center  gap-12 w-full">
   <h1 class="text-2xl text-primary font-bold">All gists</h1>
   <ul class="flex flex-col justify-center items-center w-full gap-12">
-    <li :for={gist <- @gists} class="space-y-4 w-2/3">
-      <nav class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <img src="/images/user-image.svg" class="h-7 w-auto" />
-          <div>
-            <p class="font-bold text-primary">
-              {@current_user.email} <span class="text-foreground">/</span>
-              <.link href={~p"/gist?#{[id: gist.id]}"} class="hover:underline">
-                {gist.name}
-              </.link>
-            </p>
-            <p class="text-sm">
-              {get_formatted_date(gist.updated_at)}
-            </p>
-            <p :if={gist.description && gist.description != ""} class="text-sm">
-              {gist.description}
-            </p>
-          </div>
-        </div>
-        <div class="inline-flex gap-4">
-          <button class="btn btn-ghost">
-            <img src="/images/comment.svg" alt="Comment button" class="h-5 w-5" /> 0
-          </button>
-          <button class="btn btn-ghost">
-            <img src="/images/BookmarkOutline.svg" alt="Bookmark button" class="h-5 w-5" /> 0
-          </button>
-        </div>
-      </nav>
-      <div
-        phx-hook="Highlight"
-        id="view-code-block-element"
-        class="flex h-full"
-        data-name={gist.name}
-      >
-        <pre class="w-full h-full max-h-[300px] w-full rounded-md bg-background border border-input-b m-0 overflow-auto"><code class="w-full">{gist.markup_text}</code></pre>
-      </div>
-    </li>
+    <%= for gist <- @gists do %>
+      <.live_component
+        module={ElxGistWeb.GistCardComponent}
+        gist={gist}
+        id={gist.id}
+        current_user={@current_user}
+      />
+    <% end %>
   </ul>
 
   <div :if={@pagination_info.total_pages > 1} class="flex flex-row gap-2 items-center">

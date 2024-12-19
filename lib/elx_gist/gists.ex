@@ -5,6 +5,8 @@ defmodule ElxGist.Gists do
 
   import Ecto.Query, warn: false
 
+  alias ElxGist.Gists.SavedGist
+  alias ElxGist.Comments.Comment
   alias ElxGist.Repo
 
   alias ElxGist.Gists.Gist
@@ -32,7 +34,30 @@ defmodule ElxGist.Gists do
       %Scrivener.Page{entries: [%Gist{}, ...], page_number: 1, page_size: 10, total_entries: 100}
   """
   def list_gists(params) do
-    Repo.paginate(Gist, params)
+    query = from(g in Gist, preload: [:user])
+
+    query
+    |> Repo.paginate(params)
+  end
+
+  def list_gist_comments(gist_id) do
+    query = from(c in Comment, where: c.gist_id == ^gist_id, preload: [:user])
+    Repo.all(query)
+  end
+
+  def list_user_gists(user_id, params) do
+    query = from(g in Gist, where: g.user_id == ^user_id, preload: [:user])
+    Repo.paginate(query, params)
+  end
+
+  def count_gist_comments(gist_id) do
+    count = from(c in Comment, where: c.gist_id == ^gist_id, select: count(c.id))
+    Repo.one(count)
+  end
+
+  def count_saved_gists(gist_id) do
+    count_query = from(c in SavedGist, where: c.gist_id == ^gist_id, select: count(c.id))
+    Repo.one(count_query)
   end
 
   @doc """
@@ -49,7 +74,10 @@ defmodule ElxGist.Gists do
       ** (Ecto.NoResultsError)
 
   """
-  def get_gist!(id), do: Repo.get!(Gist, id)
+  def get_gist!(id) do
+    query = from(g in Gist, where: g.id == ^id, preload: [:user])
+    Repo.one(query)
+  end
 
   @doc """
   Creates a gist.
@@ -143,8 +171,14 @@ defmodule ElxGist.Gists do
       [%SavedGist{}, ...]
 
   """
-  def list_saved_gists do
-    Repo.all(SavedGist)
+  def list_saved_gists(%User{} = user) do
+    Repo.all(
+      from g in Gist,
+        join: sg in SavedGist,
+        on: sg.gist_id == g.id,
+        where: sg.user_id == ^user.id,
+        preload: [:user]
+    )
   end
 
   @doc """
@@ -175,11 +209,17 @@ defmodule ElxGist.Gists do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_saved_gist(user, attrs \\ %{}) do
-    user
-    |> Ecto.build_assoc(:saved_gists)
-    |> SavedGist.changeset(attrs)
-    |> Repo.insert()
+  def create_saved_gist(%User{} = user, gist_id) do
+    gist = Repo.get!(Gist, gist_id)
+
+    if has_user_saved_gist(user.id, gist.id) do
+      {:error, :already_saved}
+    else
+      user
+      |> Ecto.build_assoc(:saved_gists)
+      |> SavedGist.changeset(%{user_id: user.id, gist_id: gist.id})
+      |> Repo.insert()
+    end
   end
 
   @doc """
@@ -212,8 +252,35 @@ defmodule ElxGist.Gists do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_saved_gist(%SavedGist{} = saved_gist) do
-    Repo.delete(saved_gist)
+  def delete_saved_gist(%User{} = user, gist_id) do
+    saved_gist =
+      Repo.one(from(sg in SavedGist, where: sg.user_id == ^user.id and sg.gist_id == ^gist_id))
+
+    IO.inspect(saved_gist, label: "Saved gist")
+
+    if saved_gist == nil do
+      {:error, :not_found}
+    else
+      # This is where the error happens
+      Repo.delete(saved_gist)
+      {:ok, saved_gist}
+    end
+  end
+
+  def list_user_saved_gists(user_id) do
+    query = from(s in SavedGist, where: s.user_id == ^user_id, preload: [:gists])
+    Repo.all(query)
+  end
+
+  def toggle_saved_gist(%User{} = user, gist_id) do
+    case has_user_saved_gist(user.id, gist_id) do
+      true -> delete_saved_gist(user, gist_id)
+      false -> create_saved_gist(user, gist_id)
+    end
+  end
+
+  def has_user_saved_gist(user_id, gist_id) do
+    Repo.exists?(from(s in SavedGist, where: s.user_id == ^user_id and s.gist_id == ^gist_id))
   end
 
   @doc """
