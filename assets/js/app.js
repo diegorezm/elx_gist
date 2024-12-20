@@ -31,7 +31,7 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 // and the language name are the same. 
 
 function updateLineNumbers(value) {
-  const lineNumberText = document.querySelector("#line-numbers")
+  const lineNumberText = document.querySelector(".line-numbers")
   if (!lineNumberText) return;
 
   const lines = value.split("\n")
@@ -40,6 +40,18 @@ function updateLineNumbers(value) {
 }
 
 let Hooks = {
+  SearchRedirect: {
+    mounted() {
+      this.el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          const searchQuery = e.target.value
+          const url = `/gists/all?search=${encodeURIComponent(searchQuery)}`
+          window.location.href = url
+        }
+      })
+
+    }
+  },
   ToggleEdit: {
     mounted() {
       this.el.addEventListener("click", () => {

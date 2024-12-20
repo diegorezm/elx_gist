@@ -4,7 +4,10 @@
       <img src="/images/user-image.svg" class="h-8 w-auto" />
       <div>
         <p class="font-bold text-primary">
-          {@gist.user.email} <span class="text-foreground">/</span> {@gist.name}
+          <.link href={~p"/users/gists?#{[id: @gist.user.id]}"} class="hover:underline">
+            {@gist.user.email}
+          </.link>
+          <span class="text-foreground">/ {@gist.name}</span>
         </p>
         <p class="text-sm">
           {@gist.relative}
@@ -85,8 +88,7 @@
       data-name={@gist.name}
     >
       <textarea
-        id="line-numbers"
-        class="rounded-bl-md border-input-b text-sm min-h-full w-[54px] text-right overflow-hidden leading-[1.5rem] resize-none pr-2 bg-background focus:outline-none focus:border-input-b focus:ring-0 py-4"
+        class="line-numbers rounded-bl-md border-input-b text-sm min-h-full w-[54px] text-right overflow-hidden leading-[1.5rem] resize-none pr-2 bg-background focus:outline-none focus:border-input-b focus:ring-0 py-4"
         readonly
         autocomplete="off"
         style="border-right: none;border-top: none;"
@@ -97,4 +99,59 @@
       ><code class="w-full">{@gist.markup_text}</code></pre>
     </div>
   </section>
+
+  <form class="space-y-4" phx-submit="comment-submit">
+    <.input
+      type="textarea"
+      field={@comment_form[:markup_text]}
+      class="input h-[100px] resize-none"
+      placeholder="Your comment..."
+      phx-debounce="blur"
+      autocomplete="off"
+    />
+    <.input field={@comment_form[:gist_id]} value={@gist.id} hidden />
+    <div class="w-full flex justify-end">
+      <button class="btn btn-primary" type="submit">
+        Submit
+      </button>
+    </div>
+  </form>
+  <ul class="space-y-6">
+    <li :for={comment <- @comments} class="flex w-full items-center gap-4 ">
+      <img src="/images/user-image.svg" class="h-7 w-auto" />
+
+      <div class="w-full">
+        <nav class="flex items-center justify-between w-full bg-card text-card-foreground  rounded-t-md rounded-b-none p-3 text-sm">
+          <div>
+            <p>
+              {comment.user.email}
+              <span class="text-muted-foreground">
+                commented
+              </span>
+              <span>
+                {get_formatted_date(comment.updated_at)}
+              </span>
+            </p>
+          </div>
+          <div>
+            <button
+              :if={@current_user.id == comment.user_id}
+              class="btn btn-ghost transition-transform active:scale-75"
+              aria-label="delete comment"
+              phx-click="comment-delete"
+              phx-value-id={comment.id}
+            >
+              <img src="/images/delete.svg" alt="save button svg" class="h-4" />
+            </button>
+          </div>
+        </nav>
+        <div
+          class="resize-none w-full p-5 w-full rounded-br-md rounded-bl-md bg-background border border-input-b m-0 focus:ring-0 focus:outline-none focus:border-border-b"
+          style="border-top: none;"
+        >
+          {comment.markup_text}
+        </div>
+      </div>
+    </li>
+  </ul>
 </div>

@@ -15,7 +15,10 @@ defmodule ElxGistWeb.GistCardComponent do
           <img src="/images/user-image.svg" class="h-7 w-auto" />
           <div>
             <p class="font-bold text-primary">
-              {@gist.user.email} <span class="text-foreground">/</span>
+              <.link href={~p"/users/gists?#{[id: @gist.user.id]}"} class="hover:underline">
+                {@gist.user.email}
+              </.link>
+              <span class="text-foreground">/</span>
               <.link href={~p"/gist?#{[id: @gist.id]}"} class="hover:underline">
                 {@gist.name}
               </.link>

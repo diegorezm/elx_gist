@@ -36,6 +36,15 @@ defmodule ElxGist.Gists do
   def list_gists(params) do
     query = from(g in Gist, preload: [:user])
 
+    query =
+      if search = Map.get(params, "search") do
+        from(g in query,
+          where: ilike(g.name, ^"%#{search}%") or ilike(g.description, ^"%#{search}%")
+        )
+      else
+        query
+      end
+
     query
     |> Repo.paginate(params)
   end

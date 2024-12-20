@@ -9,7 +9,14 @@
   </div>
 
   <div class="hidden md:flex items-center max-auto justify-center  w-1/2 gap-2">
-    <input placeholder="search for gists..." class="input w-2/3 p-2" />
+    <input
+      type="text"
+      id="global-search-input"
+      placeholder="search for gists..."
+      class="input w-2/3"
+      name="search"
+      phx-hook="SearchRedirect"
+    />
     <.link href={~p"/gists/all"} class="btn btn-ghost font-bold text-muted-foreground">
       All gists
     </.link>
@@ -93,7 +100,7 @@
   <div class="inline-flex items-center justify-start gap-x-8">
     <div class="text-muted-foreground inline-flex items-center">
       <img src="/images/em-logo.svg" alt="logo" class="w-9 h-9" />
-      <p>2024 Elixir mentor</p>
+      <p>2024</p>
     </div>
     <div class="text-primary space-x-4">
       <a href={~p"/"} class="hover:underline">Terms</a>

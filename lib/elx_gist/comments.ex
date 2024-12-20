@@ -4,6 +4,8 @@ defmodule ElxGist.Comments do
   """
 
   import Ecto.Query, warn: false
+  alias ElxGist.Accounts.User
+  alias ElxGist.Gists.Gist
   alias ElxGist.Repo
 
   alias ElxGist.Comments.Comment
@@ -35,7 +37,23 @@ defmodule ElxGist.Comments do
       ** (Ecto.NoResultsError)
 
   """
-  def get_comment!(id), do: Repo.get!(Comment, id)
+  def get_comment!(id) do
+    query = from(c in Comment, where: c.id == ^id, preload: [:user])
+    Repo.all(query)
+  end
+
+  def list_gist_comments(gist_id) do
+    query =
+      from(
+        c in Comment,
+        join: g in Gist,
+        on: g.id == c.gist_id,
+        where: g.id == ^gist_id,
+        preload: [:user]
+      )
+
+    Repo.all(query)
+  end
 
   @doc """
   Creates a comment.
@@ -86,8 +104,15 @@ defmodule ElxGist.Comments do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_comment(%Comment{} = comment) do
-    Repo.delete(comment)
+  def delete_comment(%User{} = user, comment_id) do
+    comment = Repo.get!(Comment, comment_id)
+
+    if comment.user_id == user.id do
+      Repo.delete(comment)
+      {:ok, comment}
+    else
+      {:error, :unauthorized}
+    end
   end
 
   @doc """
