@@ -31,12 +31,13 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 // and the language name are the same. 
 
 function updateLineNumbers(value) {
-  const lineNumberText = document.querySelector(".line-numbers")
-  if (!lineNumberText) return;
+  const lineNumberTexts = document.getElementsByClassName("line-numbers");
+  if (lineNumberTexts.length === 0) return;
 
-  const lines = value.split("\n")
-  const numbers = lines.map((_, i) => i + 1).join("\n") + "\n"
-  lineNumberText.value = numbers
+  const lineNumberText = lineNumberTexts[1];
+  const lines = value.split("\n");
+  const numbers = lines.map((_, i) => i + 1).join("\n") + "\n";
+  lineNumberText.value = numbers;
 }
 
 let Hooks = {
@@ -44,9 +45,11 @@ let Hooks = {
     mounted() {
       this.el.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-          const searchQuery = e.target.value
+          const searchQuery = e.target.value.trim()
           const url = `/gists/all?search=${encodeURIComponent(searchQuery)}`
-          window.location.href = url
+          if (searchQuery) {
+            window.location.href = url
+          }
         }
       })
 
@@ -73,7 +76,7 @@ let Hooks = {
   },
   CopyToClipBoard: {
     mounted() {
-      this.el.addEventListener("click", (e) => {
+      this.el.addEventListener("click", () => {
         const textToCopy = this.el.getAttribute("data-clipboard-gist")
         if (textToCopy) {
           navigator.clipboard.writeText(textToCopy).then(() => {
@@ -111,6 +114,7 @@ let Hooks = {
         "ex": "elixir",
         "go": "golang",
         "rs": "rust",
+        "hs": "haskell"
       }
 
       if (fileExt in extToLanguage) {
