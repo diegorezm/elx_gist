@@ -34,15 +34,24 @@ defmodule ElxGist.Gists do
       %Scrivener.Page{entries: [%Gist{}, ...], page_number: 1, page_size: 10, total_entries: 100}
   """
   def list_gists(params) do
-    query = from(g in Gist, preload: [:user])
+    base_query =
+      from(g in Gist,
+        order_by: [desc: g.inserted_at],
+        preload: [:user]
+      )
 
     query =
-      if search = Map.get(params, "search") do
-        from(g in query,
-          where: ilike(g.name, ^"%#{search}%") or ilike(g.description, ^"%#{search}%")
-        )
-      else
-        query
+      case Map.get(params, "search") do
+        nil ->
+          base_query
+
+        "" ->
+          base_query
+
+        search ->
+          from(g in base_query,
+            where: ilike(g.name, ^"%#{search}%") or ilike(g.description, ^"%#{search}%")
+          )
       end
 
     query
@@ -55,7 +64,7 @@ defmodule ElxGist.Gists do
   end
 
   def list_user_gists(user_id, params) do
-    query = from(g in Gist, where: g.user_id == ^user_id, preload: [:user])
+    query = from(g in Gist, where: g.user_id == ^user_id, order_by: [desc: g.inserted_at],preload: [:user])
     Repo.paginate(query, params)
   end
 

@@ -49,6 +49,7 @@ defmodule ElxGist.Comments do
         join: g in Gist,
         on: g.id == c.gist_id,
         where: g.id == ^gist_id,
+        order_by: [desc: c.inserted_at],
         preload: [:user]
       )
 
