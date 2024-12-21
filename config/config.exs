@@ -14,6 +14,7 @@ config :elx_gist,
 # Configures the endpoint
 config :elx_gist, ElxGistWeb.Endpoint,
   url: [host: "localhost"],
+  check_origin: false,
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: ElxGistWeb.ErrorHTML, json: ElxGistWeb.ErrorJSON],
